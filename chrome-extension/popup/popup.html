@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>蜂巢 AI 助手</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 320px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+    .header p {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 8px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .tab.active {
+      background: white;
+      color: #667eea;
+    }
+    .tab:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .content {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      color: #333;
+      min-height: 250px;
+    }
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    .section h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 5px;
+      color: #666;
+    }
+    .input-group input,
+    .input-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 13px;
+      resize: none;
+    }
+    .input-group textarea {
+      height: 80px;
+    }
+    .quick-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .quick-prompt {
+      padding: 6px 12px;
+      background: #f0f0f0;
+      border-radius: 20px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-prompt:hover {
+      background: #667eea;
+      color: white;
+    }
+    .status {
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🐝 蜂巢 AI 助手</h1>
+    <p>让 AI 帮你打工</p>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab active" data-tab="chat">AI 对话</button>
+    <button class="tab" data-tab="prompts">提示词</button>
+    <button class="tab" data-tab="tools">工具箱</button>
+  </div>
+  
+  <div class="content">
+    <!-- AI 对话 -->
+    <div class="section active" id="chat">
+      <h3>💬 快速提问</h3>
+      <div class="quick-prompts">
+        <span class="quick-prompt" data-prompt="解释这段代码">解释代码</span>
+        <span class="quick-prompt" data-prompt="优化这段代码">优化代码</span>
+        <span class="quick-prompt" data-prompt="写一个 React 组件">写组件</span>
+        <span class="quick-prompt" data-prompt="修复这个 bug">修复 bug</span>
+      </div>
+      <div class="input-group">
+        <label>输入你的问题</label>
+        <textarea id="chat-input" placeholder="粘贴代码或描述问题..."></textarea>
+      </div>
+      <button class="btn" id="send-btn">🚀 发送</button>
+      <div class="status" id="chat-status">准备就绪</div>
+    </div>
+    
+    <!-- 提示词管理 -->
+    <div class="section" id="prompts">
+      <h3>📝 我的提示词</h3>
+      <div class="input-group">
+        <label>标题</label>
+        <input type="text" id="prompt-title" placeholder="提示词标题">
+      </div>
+      <div class="input-group">
+        <label>提示词内容</label>
+        <textarea id="prompt-content" placeholder="输入提示词..."></textarea>
+      </div>
+      <button class="btn" id="save-prompt-btn">💾 保存</button>
+      <button class="btn btn-secondary" id="view-prompts-btn">📋 查看已保存</button>
+    </div>
+    
+    <!-- 工具箱 -->
+    <div class="section" id="tools">
+      <h3>🛠️ 开发者工具</h3>
+      <button class="btn" id="json-format-btn">📄 JSON 格式化</button>
+      <button class="btn" id="base64-btn">🔢 Base64 编码/解码</button>
+      <button class="btn" id="timestamp-btn">⏰ 时间戳转换</button>
+      <button class="btn" id="color-btn">🎨 颜色转换</button>
+      <div class="status" id="tools-status">更多工具开发中...</div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
